@@ -2,6 +2,43 @@
 
 Используя таблицу `cards`, представление `active_cards` и принцип **Soft Delete**, реализуйте удаление карты через `VIEW` без физического удаления записи.
 
+### Общая структура `INSTEAD OF` триггера в SQLite
+
+```sql
+CREATE TRIGGER trigger_name
+INSTEAD OF INSERT | UPDATE | DELETE
+ON view_name
+BEGIN
+    -- действие вместо исходной операции
+END;
+```
+
+### Пример для `DELETE`
+
+```sql
+CREATE TRIGGER soft_delete
+INSTEAD OF DELETE ON active_cards
+BEGIN
+    UPDATE cards
+    SET deleted = 1
+    WHERE id = OLD.id;
+END;
+```
+
+### Как это работает
+
+```text
+DELETE из VIEW
+      ↓
+INSTEAD OF DELETE
+      ↓
+DELETE не выполняется
+      ↓
+Выполняется код внутри BEGIN ... END
+```
+
+> **Важно:** в SQLite `INSTEAD OF` используется для представлений (`VIEW`), а не для обычных таблиц.
+
 ## Задание 1. Перехват операции `DELETE`
 
 Создайте представление:
